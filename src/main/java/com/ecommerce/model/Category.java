@@ -1,5 +1,6 @@
 package com.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,6 +25,7 @@ public class Category {
 
     //relationship
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @JsonIgnore // IGNORE field product waktu serialization ke JSON
     private Set<Product> products = new HashSet<>();
 
     //helper method
