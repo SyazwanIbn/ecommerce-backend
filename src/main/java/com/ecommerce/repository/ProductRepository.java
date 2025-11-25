@@ -17,7 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
     //Optional, custom method untuk cari produk by name
-    List<Product> findByNameContainingIgnoringCase(String name);
+    List<Product> findByNameContainingIgnoreCase(String name);
 
 }
 
