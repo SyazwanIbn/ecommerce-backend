@@ -29,7 +29,7 @@ public class ProductService {
     }
 
 
-    //method: create product
+    //method 1: create product
     public ProductDTO createProduct(ProductDTO productDTO){
         //1. dapatkan id category yang dihantar
         Category category = categoryRepository.findById(productDTO.getCategory().getId())
@@ -50,7 +50,7 @@ public class ProductService {
 
     }
 
-    //method: get all product
+    //method 2: get all product
     public List<ProductDTO> getAllProducts (){
         List<Product> products = productRepository.findAll();
 
@@ -59,6 +59,61 @@ public class ProductService {
                 .map(this::convertToDTO) // METHOD CONVERT KE DTO
                 .collect(Collectors.toList());
     }
+
+    //method 3: getProductById
+    public ProductDTO getProductById (Long id){
+        Product product = productRepository.findById(id)
+                .orElseThrow(()->new RuntimeException(
+                        "Product Not Found " + id
+                ));
+
+        //convert entity ke dto
+        return convertToDTO(product);
+    }
+
+    //method 4: updateProduct
+    public ProductDTO updateProduct(Long id, ProductDTO productDTO){
+        //cari produk lama
+        Product oldProduct = productRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException(
+                        "Product not found with id: " + id
+                ));
+
+        // semak category
+        Category existingCategory = categoryRepository.findById(productDTO.getCategory().getId())
+                .orElseThrow(()-> new RuntimeException(
+                        "Category Not Found with Id: " + productDTO.getCategory().getId()
+                ));
+
+        // update data pada oldproduct
+        oldProduct.setName(productDTO.getName());
+        oldProduct.setDescription(productDTO.getDescription());
+        oldProduct.setSku(productDTO.getSku());
+        oldProduct.setPrice(productDTO.getPrice());
+        oldProduct.setStockQuantity(productDTO.getStockQuantity());
+        oldProduct.setCategory(existingCategory);
+
+        //save update product
+        Product updatedProduct = productRepository.save(oldProduct);
+
+        //convert balik entity ke DTO
+        return convertToDTO(updatedProduct);
+    }
+    // method 5: delete product
+    public void deleteProduct(Long id) {
+        Product productEntity = productRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException(
+                        "Product Not Found" + id
+                ));
+        productEntity.setActive(false);
+
+        productRepository.save(productEntity);
+    }
+
+
+
+
+
 
     //helper method untuk convert entity ke DTO
     private ProductDTO convertToDTO(Product product){
@@ -93,6 +148,7 @@ public class ProductService {
         // category akan diset luar method ni
         return product;
     }
+
 
 }
 
